@@ -252,13 +252,18 @@ figure {
 
 .btn {
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
   width: 140px;
   height: 40px;
   flex: 0 0 140px;
   color: #000;
+  background: #fff;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
   font-size: 14px;
   line-height: 1;
+  padding: 0 16px 0 20px;
   white-space: nowrap;
   transition: transform 180ms ease, opacity 180ms ease;
 }
@@ -266,57 +271,39 @@ figure {
 .btn span:first-child {
   display: inline-flex;
   align-items: center;
-  width: 96px;
-  height: 40px;
-  flex: 0 0 96px;
-  padding: 0 0 0 20px;
+  height: 100%;
+  flex: 1 1 auto;
 }
 
 .btn:hover {
   transform: translateY(-2px);
 }
 
-.btn-light span:first-child {
-  background: #fff;
-}
-
 .btn-dark {
   color: #fff;
-}
-
-.btn-dark span:first-child {
   background: #000;
 }
 
 .btn::after {
-  width: 10px;
-  height: 40px;
-  flex: 0 0 10px;
-  content: "";
-  background: url("./assets/button-tail-light.svg") center / 100% 100% no-repeat;
-}
-
-.btn-dark::after {
-  background-image: url("./assets/button-tail-dark.svg");
+  display: none;
 }
 
 .btn-icon {
-  width: 34px;
-  height: 40px;
-  flex: 0 0 34px;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
   margin-left: 0;
-  background-position: 8px center;
+  background-color: transparent;
+  background-position: center;
   background-repeat: no-repeat;
   background-size: 16px 16px;
 }
 
 .btn-icon.dark {
-  background-color: #fff;
   background-image: url("./assets/arrow-dark.svg");
 }
 
 .btn-icon.light {
-  background-color: #000;
   background-image: url("./assets/arrow-light.svg");
 }
 
