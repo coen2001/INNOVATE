@@ -676,7 +676,7 @@ figure {
 }
 
 .uav.is-visible .uav-small-left {
-  transform: none;
+  transform: scale(calc(1 - (0.94 * var(--uav-card-progress))));
 }
 
 .uav.is-visible .uav-main {
@@ -694,12 +694,14 @@ figure {
 
 .uav-small-left {
   position: absolute;
-  top: calc(7.4074vh - (2.2222vh * var(--uav-card-progress)));
-  left: calc(-35% * var(--uav-card-progress));
+  z-index: 4;
+  top: 7.4074vh;
+  left: 0;
   width: 30%;
   height: 22.5926vh;
   opacity: 1;
-  transform: translate3d(calc(-28px * var(--uav-card-progress)), calc(-16px * var(--uav-card-progress)), 0);
+  transform: scale(calc(1 - (0.94 * var(--uav-card-progress))));
+  transform-origin: left top;
 }
 
 .uav-main {
