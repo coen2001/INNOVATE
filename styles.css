@@ -501,9 +501,8 @@ figure {
   transform: scale(1.06) translate3d(0, 0, 0);
   transition:
     opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
-    clip-path 1100ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 1400ms cubic-bezier(0.18, 0.84, 0.18, 1);
-  will-change: clip-path, opacity, transform;
+  will-change: opacity, transform;
 }
 
 .connectivity-bg-slide.is-active {
