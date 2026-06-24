@@ -419,9 +419,9 @@ figure {
   width: 100%;
   height: clamp(290px, 20.833vw, 400px);
   margin-bottom: clamp(48px, 2.5vw, 48px);
-  clip-path: inset(0 0 0 calc((1 - var(--about-secondary-reveal)) * 100%));
-  transform: translate3d(calc((1 - var(--about-secondary-reveal)) * 44px), 0, 0);
-  transform-origin: right center;
+  clip-path: inset(0 calc((1 - var(--about-secondary-reveal)) * 100%) calc((1 - var(--about-secondary-reveal)) * 100%) 0);
+  transform: translate3d(0, 0, 0);
+  transform-origin: left top;
   transition:
     clip-path 1180ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 1180ms cubic-bezier(0.22, 1, 0.36, 1);
