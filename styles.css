@@ -370,6 +370,9 @@ figure {
 }
 
 .about {
+  --about-main-reveal: 0;
+  --about-secondary-reveal: 0;
+  --about-copy-reveal: 0;
   min-height: clamp(1040px, 72.083vw, 1384px);
   padding: clamp(96px, 7.91vw, 152px) 0 clamp(80px, 4.16vw, 80px);
   background: var(--page-bg);
@@ -409,16 +412,48 @@ figure {
 
 .about-main {
   height: clamp(680px, 50vw, 960px);
+  clip-path: inset(0 calc((1 - var(--about-main-reveal)) * 100%) 0 0);
+  transform: translate3d(calc((1 - var(--about-main-reveal)) * -52px), 0, 0);
+  transform-origin: left center;
+  transition:
+    clip-path 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: clip-path, transform;
 }
 
 .about-main img {
   object-position: center top;
+  transform: scale(calc(1.13 - (var(--about-main-reveal) * 0.13)));
+  transform-origin: center center;
+  transition: transform 1400ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .about-secondary {
   width: 100%;
   height: clamp(290px, 20.833vw, 400px);
   margin-bottom: clamp(48px, 2.5vw, 48px);
+  clip-path: inset(0 0 0 calc((1 - var(--about-secondary-reveal)) * 100%));
+  transform: translate3d(calc((1 - var(--about-secondary-reveal)) * 44px), 0, 0);
+  transform-origin: right center;
+  transition:
+    clip-path 1180ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1180ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: clip-path, transform;
+}
+
+.about-secondary img {
+  transform: scale(calc(1.12 - (var(--about-secondary-reveal) * 0.12)));
+  transform-origin: center center;
+  transition: transform 1400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-side .copy-block {
+  opacity: calc(0.42 + (var(--about-copy-reveal) * 0.58));
+  transform: translate3d(0, calc((1 - var(--about-copy-reveal)) * 34px), 0);
+  transition:
+    opacity 960ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1120ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 
 .copy-block h2,
@@ -444,7 +479,22 @@ figure {
 }
 
 .connectivity {
+  --connectivity-progress: 0;
+  --connectivity-copy-opacity: 1;
+  --connectivity-copy-offset: 0px;
+  height: 500vh;
+  min-height: 0;
+  overflow: visible;
   color: #fff;
+  background: #172128;
+}
+
+.connectivity-stage {
+  position: sticky;
+  top: 0;
+  height: var(--screen-h);
+  min-height: 0;
+  overflow: hidden;
   background: #172128;
 }
 
@@ -460,7 +510,13 @@ figure {
 
 .connectivity-bg-slide {
   opacity: 0;
-  transition: opacity 900ms ease;
+  clip-path: inset(0 0 0 0);
+  transform: scale(1.06) translate3d(0, 0, 0);
+  transition:
+    opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1400ms cubic-bezier(0.18, 0.84, 0.18, 1);
+  will-change: clip-path, opacity, transform;
 }
 
 .connectivity-bg-slide.is-active {
@@ -478,9 +534,11 @@ figure {
   top: calc(431 / 1080 * 100%);
   left: calc((100vw - var(--container)) / 2);
   width: min(680px, 42.5%);
+  opacity: var(--connectivity-copy-opacity);
+  transform: translate3d(0, var(--connectivity-copy-offset), 0);
   transition:
-    opacity 420ms ease,
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 900ms cubic-bezier(0.25, 0.74, 0.22, 0.99),
+    transform 1100ms cubic-bezier(0.25, 0.74, 0.22, 0.99);
 }
 
 .connectivity.is-switching .connectivity-copy {
@@ -506,6 +564,7 @@ figure {
 }
 
 .progress-item {
+  --item-progress: 0;
   display: block;
   padding: 0;
   color: var(--white-muted);
@@ -528,13 +587,14 @@ figure {
 .progress-item .bar::after {
   position: absolute;
   inset: 0;
-  width: 0;
+  width: calc(var(--item-progress) * 100%);
   content: "";
   background: #fff;
+  transition: width 220ms linear;
 }
 
 .progress-item.active .bar::after {
-  animation: progressFill 5200ms linear forwards;
+  width: calc(var(--item-progress) * 100%);
 }
 
 .progress-item:focus-visible {

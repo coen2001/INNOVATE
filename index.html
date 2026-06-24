@@ -78,38 +78,40 @@
       </section>
 
       <section class="section connectivity" id="products" aria-labelledby="connectivity-title">
-        <div class="connectivity-bg-stack" aria-hidden="true">
-          <img class="section-bg connectivity-bg-slide is-active" src="./assets/connectivity-bg-01.png" alt="" />
-          <img class="section-bg connectivity-bg-slide" src="./assets/connectivity-bg-02.png" alt="" />
-          <img class="section-bg connectivity-bg-slide" src="./assets/connectivity-bg-03.png" alt="" />
-          <img class="section-bg connectivity-bg-slide" src="./assets/connectivity-bg-04.png" alt="" />
-        </div>
-        <div class="shade connectivity-shade"></div>
-        <div class="connectivity-copy">
-          <p class="eyebrow">Global Satellite Connectivity</p>
-          <h2 id="connectivity-title">Multi-Orbit Satellite Communication</h2>
-          <p>
-            Supporting GEO, MEO, and LEO satellite networks to provide seamless, resilient, and high-availability
-            communications across global mission environments.
-          </p>
-        </div>
-        <div class="progress-row" aria-label="Product highlights">
-          <button class="progress-item active" type="button" data-connectivity-slide="0">
-            <span class="bar"></span>
-            <p><b>01</b> Multi-Orbit Satellite Communication</p>
-          </button>
-          <button class="progress-item" type="button" data-connectivity-slide="1">
-            <span class="bar"></span>
-            <p><b>02</b> Unmanned Platform Integration</p>
-          </button>
-          <button class="progress-item" type="button" data-connectivity-slide="2">
-            <span class="bar"></span>
-            <p><b>03</b> Ku / Ka Band Technology</p>
-          </button>
-          <button class="progress-item" type="button" data-connectivity-slide="3">
-            <span class="bar"></span>
-            <p><b>04</b> Lightweight &amp; Mobile Design</p>
-          </button>
+        <div class="connectivity-stage">
+          <div class="connectivity-bg-stack" aria-hidden="true">
+            <img class="section-bg connectivity-bg-slide is-active" src="./assets/connectivity-bg-01.png" alt="" />
+            <img class="section-bg connectivity-bg-slide" src="./assets/connectivity-bg-02.png" alt="" />
+            <img class="section-bg connectivity-bg-slide" src="./assets/connectivity-bg-03.png" alt="" />
+            <img class="section-bg connectivity-bg-slide" src="./assets/connectivity-bg-04.png" alt="" />
+          </div>
+          <div class="shade connectivity-shade"></div>
+          <div class="connectivity-copy">
+            <p class="eyebrow">Global Satellite Connectivity</p>
+            <h2 id="connectivity-title">Multi-Orbit Satellite Communication</h2>
+            <p>
+              Supporting GEO, MEO, and LEO satellite networks to provide seamless, resilient, and high-availability
+              communications across global mission environments.
+            </p>
+          </div>
+          <div class="progress-row" aria-label="Product highlights">
+            <button class="progress-item active" type="button" data-connectivity-slide="0">
+              <span class="bar"></span>
+              <p><b>01</b> Multi-Orbit Satellite Communication</p>
+            </button>
+            <button class="progress-item" type="button" data-connectivity-slide="1">
+              <span class="bar"></span>
+              <p><b>02</b> Unmanned Platform Integration</p>
+            </button>
+            <button class="progress-item" type="button" data-connectivity-slide="2">
+              <span class="bar"></span>
+              <p><b>03</b> Ku / Ka Band Technology</p>
+            </button>
+            <button class="progress-item" type="button" data-connectivity-slide="3">
+              <span class="bar"></span>
+              <p><b>04</b> Lightweight &amp; Mobile Design</p>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -467,6 +469,23 @@
         return clampUnit(-rect.top / travel);
       };
 
+      const aboutSection = document.querySelector(".about");
+      const renderAboutScene = () => {
+        if (!aboutSection) return;
+        const rect = aboutSection.getBoundingClientRect();
+        const travel = Math.max(aboutSection.offsetHeight * 0.78, 1);
+        const progress = clampUnit((window.innerHeight * 0.58 - rect.top) / travel);
+        aboutSection.style.setProperty("--about-main-reveal", smoothStep(progress / 0.72).toFixed(4));
+        aboutSection.style.setProperty("--about-secondary-reveal", smoothStep((progress - 0.12) / 0.72).toFixed(4));
+        aboutSection.style.setProperty("--about-copy-reveal", smoothStep((progress - 0.34) / 0.56).toFixed(4));
+      };
+
+      if (aboutSection) {
+        renderAboutScene();
+        window.addEventListener("scroll", renderAboutScene, { passive: true });
+        window.addEventListener("resize", renderAboutScene);
+      }
+
       const uavSection = document.querySelector(".uav");
       const uavSlides = [
         {
@@ -548,60 +567,125 @@
         }
       ];
 
-      let connectivityTimer = null;
+      let connectivityTargetProgress = 0;
+      let connectivityRenderedProgress = 0;
+      let connectivityAnimationFrame = 0;
 
-      const setConnectivitySlide = (nextIndex, restartTimer = true) => {
+      const renderConnectivityScene = (progress) => {
         if (!connectivitySection) return;
 
         const slides = connectivitySection.querySelectorAll(".connectivity-bg-slide");
         const tabs = connectivitySection.querySelectorAll(".progress-item");
         const slideCount = connectivitySlides.length;
-        const normalizedIndex = (nextIndex + slideCount) % slideCount;
-        const currentIndex = Number(connectivitySection.dataset.slideIndex || 0);
-        if (normalizedIndex === currentIndex && connectivitySection.dataset.ready === "true") return;
+        const segmentCount = Math.max(slideCount - 1, 1);
+        const raw = progress * segmentCount;
+        const baseIndex = Math.min(slideCount - 1, Math.floor(raw));
+        const nextIndex = Math.min(slideCount - 1, baseIndex + 1);
+        const localProgress = baseIndex === slideCount - 1 ? 0 : raw - baseIndex;
+        const reveal = smoothStep(localProgress);
+        const copyIndex = Math.min(slideCount - 1, Math.round(raw));
+        const copyDistance = Math.abs(raw - copyIndex);
+        const copyOpacity = clampUnit((0.43 - copyDistance) / 0.2);
+        const copyOffset = (1 - copyOpacity) * 22;
+        const imageScale = 1.07 - progress * 0.045;
 
-        connectivitySection.dataset.slideIndex = normalizedIndex;
-        connectivitySection.dataset.ready = "true";
-        connectivitySection.classList.add("is-switching");
+        slides.forEach((image, index) => {
+          image.classList.remove("is-active");
+          image.style.opacity = "0";
+          image.style.zIndex = "0";
+          image.style.clipPath = "inset(100% 0 0 0)";
+          image.style.transform = `scale(${imageScale.toFixed(4)}) translate3d(0, 0, 0)`;
 
-        window.setTimeout(() => {
-          const slide = connectivitySlides[normalizedIndex];
+          if (index === baseIndex) {
+            image.classList.add("is-active");
+            image.style.opacity = "1";
+            image.style.zIndex = "2";
+            image.style.clipPath = `inset(0 0 ${(reveal * 100).toFixed(3)}% 0)`;
+          }
+
+          if (index === nextIndex && nextIndex !== baseIndex) {
+            image.style.opacity = "1";
+            image.style.zIndex = "3";
+            image.style.clipPath = `inset(${((1 - reveal) * 100).toFixed(3)}% 0 0 0)`;
+            image.style.transform = `scale(${(imageScale + (1 - reveal) * 0.018).toFixed(4)}) translate3d(0, 0, 0)`;
+          }
+        });
+
+        tabs.forEach((tab, index) => {
+          const itemProgress =
+            progress >= 0.999 && index === slideCount - 1
+              ? 1
+              : index < baseIndex
+                ? 1
+                : index === baseIndex
+                  ? baseIndex === slideCount - 1
+                    ? 1
+                    : localProgress
+                  : 0;
+          tab.classList.toggle("active", index === copyIndex);
+          tab.setAttribute("aria-pressed", index === copyIndex ? "true" : "false");
+          tab.style.setProperty("--item-progress", itemProgress.toFixed(4));
+        });
+
+        if (connectivitySection.dataset.copyIndex !== String(copyIndex)) {
+          const slide = connectivitySlides[copyIndex];
           const eyebrow = connectivitySection.querySelector(".connectivity-copy .eyebrow");
           const title = connectivitySection.querySelector(".connectivity-copy h2");
           const description = connectivitySection.querySelector(".connectivity-copy p:not(.eyebrow)");
-
-          slides.forEach((image, index) => image.classList.toggle("is-active", index === normalizedIndex));
-          tabs.forEach((tab, index) => {
-            tab.classList.toggle("active", index === normalizedIndex);
-            tab.setAttribute("aria-pressed", index === normalizedIndex ? "true" : "false");
-          });
 
           eyebrow.textContent = slide.eyebrow;
           setPlainText(title, slide.title);
           description.textContent = slide.description;
           refreshWhisper(title);
-          connectivitySection.classList.remove("is-switching");
-        }, 260);
+          connectivitySection.dataset.copyIndex = String(copyIndex);
+        }
 
-        if (!restartTimer) return;
-        window.clearInterval(connectivityTimer);
-        connectivityTimer = window.setInterval(() => {
-          const rect = connectivitySection.getBoundingClientRect();
-          const visible = rect.top < window.innerHeight * 0.72 && rect.bottom > window.innerHeight * 0.28;
-          if (!visible) return;
-          setConnectivitySlide(Number(connectivitySection.dataset.slideIndex || 0) + 1, false);
-        }, 5200);
+        connectivitySection.dataset.slideIndex = String(copyIndex);
+        connectivitySection.classList.toggle("is-switching", copyOpacity < 0.9);
+        connectivitySection.style.setProperty("--connectivity-progress", progress.toFixed(4));
+        connectivitySection.style.setProperty("--connectivity-copy-opacity", copyOpacity.toFixed(3));
+        connectivitySection.style.setProperty("--connectivity-copy-offset", `${copyOffset.toFixed(1)}px`);
+      };
+
+      const pumpConnectivityProgress = () => {
+        connectivityAnimationFrame = 0;
+        const delta = connectivityTargetProgress - connectivityRenderedProgress;
+        if (Math.abs(delta) < 0.001) {
+          connectivityRenderedProgress = connectivityTargetProgress;
+          renderConnectivityScene(connectivityRenderedProgress);
+          return;
+        }
+
+        connectivityRenderedProgress += delta * 0.15;
+        renderConnectivityScene(connectivityRenderedProgress);
+        connectivityAnimationFrame = window.requestAnimationFrame(pumpConnectivityProgress);
+      };
+
+      const updateConnectivityScroll = () => {
+        if (!connectivitySection) return;
+        const rect = connectivitySection.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+
+        connectivityTargetProgress = getStickyProgress(connectivitySection);
+        if (!connectivityAnimationFrame) connectivityAnimationFrame = window.requestAnimationFrame(pumpConnectivityProgress);
       };
 
       if (connectivitySection) {
         connectivitySection.dataset.slideIndex = "0";
+        connectivitySection.dataset.copyIndex = "0";
         connectivitySection.querySelectorAll(".progress-item").forEach((button, index) => {
           button.setAttribute("aria-pressed", index === 0 ? "true" : "false");
           button.addEventListener("click", () => {
-            setConnectivitySlide(Number(button.dataset.connectivitySlide || index));
+            const targetIndex = Number(button.dataset.connectivitySlide || index);
+            const travel = Math.max(connectivitySection.offsetHeight - window.innerHeight, 1);
+            const progress = targetIndex / Math.max(connectivitySlides.length - 1, 1);
+            setDampedTarget(connectivitySection.offsetTop + travel * progress);
           });
         });
-        setConnectivitySlide(0);
+        renderConnectivityScene(0);
+        updateConnectivityScroll();
+        window.addEventListener("scroll", updateConnectivityScroll, { passive: true });
+        window.addEventListener("resize", updateConnectivityScroll);
       }
 
       const createImageClone = (frame) => {
