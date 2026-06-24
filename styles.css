@@ -642,10 +642,11 @@ figure {
 
 .uav .image-frame {
   clip-path: inset(0 0 0 0);
+  opacity: 1;
   transition:
-    opacity 620ms ease,
-    transform 1100ms cubic-bezier(0.18, 0.84, 0.18, 1),
-    clip-path 1200ms cubic-bezier(0.18, 0.84, 0.18, 1);
+    transform 980ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 980ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: left, top, width, height, transform;
 }
 
 .uav .image-frame img {
@@ -660,7 +661,7 @@ figure {
 }
 
 .uav-stage.is-animating .image-frame {
-  opacity: 0;
+  opacity: 1;
   transition: none;
 }
 
@@ -697,12 +698,13 @@ figure {
   left: calc(-35% * var(--uav-card-progress));
   width: 30%;
   height: 22.5926vh;
-  opacity: calc(1 - (0.45 * var(--uav-card-progress)));
+  opacity: 1;
   transform: translate3d(calc(-28px * var(--uav-card-progress)), calc(-16px * var(--uav-card-progress)), 0);
 }
 
 .uav-main {
   position: absolute;
+  z-index: 2;
   top: 7.4074vh;
   left: calc(31.5% - (31.5% * var(--uav-card-progress)));
   width: calc(37% - (7% * var(--uav-card-progress)));
@@ -759,7 +761,7 @@ figure {
 
 .uav-small-right {
   position: absolute;
-  z-index: 1;
+  z-index: 3;
   left: calc(70% - (38.5% * var(--uav-card-progress)));
   top: calc(70vh - (62.5926vh * var(--uav-card-progress)));
   width: calc(30% + (7% * var(--uav-card-progress)));
@@ -773,8 +775,8 @@ figure {
 }
 
 .uav:not(.is-visible) .image-frame {
-  opacity: 0;
-  clip-path: inset(18% 0 18% 0);
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
 }
 
 .uav:not(.is-visible) .uav-copy {

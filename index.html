@@ -820,9 +820,9 @@
         const baseIndex = Math.min(uavSlides.length - 1, Math.floor(raw));
         const nextIndex = Math.min(uavSlides.length - 1, baseIndex + 1);
         const localProgress = baseIndex === uavSlides.length - 1 ? 0 : raw - baseIndex;
-        const morph = smoothStep((localProgress - 0.08) / 0.84);
-        const startCopyOpacity = 1 - smoothStep(localProgress / 0.055);
-        const endCopyOpacity = smoothStep((localProgress - 0.94) / 0.06);
+        const morph = smoothStep(localProgress);
+        const startCopyOpacity = 1 - smoothStep(localProgress / 0.08);
+        const endCopyOpacity = smoothStep((localProgress - 0.9) / 0.1);
         const copyOpacity =
           baseIndex === uavSlides.length - 1 ? 1 : Math.max(startCopyOpacity, endCopyOpacity);
         const copyIndex = localProgress > 0.9 ? nextIndex : baseIndex;
